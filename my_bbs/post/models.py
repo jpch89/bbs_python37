@@ -51,3 +51,22 @@ class Book(models.Model):
 class Author(models.Model):
     name = models.CharField(max_length=32, help_text='作者姓名')
     books = models.ManyToManyField(to=Book)
+
+
+class CategoryTopic(Topic):
+    """
+    分类 Topic
+    """
+    category = models.CharField(max_length=32, help_text='类别')
+
+
+class ProxyTopic(Topic):
+    """
+    代理 Topic
+    """
+    class Meta:
+        proxy = True
+        ordering = ['id']
+    
+    def is_topic_valid(self):
+        return 'django' in self.title
