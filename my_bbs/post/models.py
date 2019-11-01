@@ -27,6 +27,10 @@ class Topic(BaseModel):
     is_online = models.BooleanField(default=True, help_text=u'话题是否在线')
     user = models.ForeignKey(to=User, to_field='id', on_delete=models.CASCADE, help_text=u'关联用户表')
 
+    class Meta:
+        verbose_name = u'话题'
+        verbose_name_plural = u'话题'
+
     def __str__(self):
         return '%d: %s' % (self.id, self.title[:20])
 
@@ -39,6 +43,10 @@ class Comment(BaseModel):
     topic = models.ForeignKey(to=Topic, to_field='id', on_delete=models.CASCADE, help_text=u'关联话题表')
     up = models.IntegerField(default=0, help_text=u'支持')
     down = models.IntegerField(default=0, help_text=u'反对')
+
+    class Meta:
+        verbose_name = u'话题评论'
+        verbose_name_plural = u'话题评论'
     
     def __str__(self):
         return '%d: %s' % (self.id, self.content[:20])
