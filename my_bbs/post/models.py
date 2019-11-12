@@ -22,8 +22,8 @@ class Topic(BaseModel):
     """
     BBS 论坛发布的话题
     """
-    title = models.CharField(max_length=255, unique=True, help_text='话题标题')
-    content = models.TextField(help_text=u'话题内容')
+    title = models.CharField('标题model', max_length=255, unique=True, help_text='话题标题')
+    content = models.TextField('内容model', help_text=u'话题内容')
     is_online = models.BooleanField(default=True, help_text=u'话题是否在线')
     user = models.ForeignKey(to=User, to_field='id', on_delete=models.CASCADE, help_text=u'关联用户表')
 
@@ -33,6 +33,9 @@ class Topic(BaseModel):
 
     def __str__(self):
         return '%d: %s' % (self.id, self.title[:20])
+    
+    def get_absolute_url(self):
+        return '/post/topic/%s/' % self.id
 
 
 class Comment(BaseModel):

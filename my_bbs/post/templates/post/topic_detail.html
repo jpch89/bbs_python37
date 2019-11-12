@@ -1,0 +1,29 @@
+{% block content %}
+<h2>Topic</h2>
+<ul>
+  <li>(id): {{ topic.id }}</li>
+  <li>(title): {{ topic.title }}</li>
+  <li>(content): {{ topic.content }}</li>
+  <li>(user): {{ topic.user.username }}</li>
+  <li>(created_time): {{ topic.created_time }}</li>
+  <li>(last_modified): {{ topic.last_modified }}</li>
+  <li>(评论):
+    <table border="1">
+      <tr>
+        <th>评论id</th>
+        <th>内容</th>
+        <th>赞同</th>
+        <th>反对</th>
+      </tr>
+      {% for comment in comment_list %}
+      <tr>
+        <td>{{ comment.id }}</td>
+        <td>{{ comment.content }}</td>
+        <td>{{ comment.up }}</td>
+        <td>{{ comment.down }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </li>
+</ul>
+{% endblock content %}
