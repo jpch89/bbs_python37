@@ -2,7 +2,10 @@ import functools
 import time
 
 from django.contrib.auth.decorators import login_required
+from django.core.signals import request_finished, request_started
 from django.db.models import F
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.template import Context, RequestContext, Template
@@ -19,6 +22,7 @@ from django.views.generic import (DetailView, ListView, RedirectView,
 from post.forms import TopicModelForm, TopicSearchForm
 from post.models import Comment, Topic
 from post.post_service import build_topic_base_info, build_topic_detail_info
+from post.signals import register_signal
 
 
 def hello_django_bbs(request):
@@ -40,6 +44,10 @@ def hello_django_bbs(request):
 
 def hello_django_bbs(request):
     return render(request, 'post/hello_django_bbs.html', {'project': 'Django BBS'})
+
+def hello_django_bbs(request):
+    register_signal.send(hello_django_bbs, request=request, user=request.user)
+    return JsonResponse({'hello': 'django'})
 
 
 def exec_time(func):
@@ -226,7 +234,21 @@ def hello_django_bbs(request):
 
 
 def hello_django_bbs(request):
+    print('hello_django_bbs')
+    raise Exception('hello_django_bbs error')
     return render(request, 'post/hello_django_bbs.html')
+
+
+def hello_django_bbs(request):
+    print('hello_django_bbs')
+
+    def render():
+        print('hello_django_bbs: render')
+        return JsonResponse({'hello': 'Django'})
+    
+    response = HttpResponse()
+    response.render = render
+    return response
 
 """
 def search_topic_form(request):
@@ -270,3 +292,32 @@ def topic_model_form(request):
             return render(request, 'post/topic_model_form.html', context={'form': topic})
     else:
         return render(request, 'post/topic_model_form.html', context={'form': TopicModelForm()})
+
+
+"""
+def request_started_callback(sender, **kwargs):
+    print('request started: %s' % kwargs['environ'])
+
+
+def request_finished_callback(sender, **kwargs):
+    print('request finished')
+
+
+# request_started.connect(request_started_callback)
+request_started.connect(request_started_callback, dispatch_uid='request_started')
+request_finished.connect(request_finished_callback)
+"""
+
+
+@receiver(request_started, dispatch_uid='request_started')
+def request_started_callback(sender, **kwargs):
+    print('request started: %s' % kwargs['environ'])
+
+@receiver(request_finished)
+def request_finished_callback(sender, **kwargs):
+    print('request finished')
+
+
+@receiver(post_save, sender=Comment)
+def comment_save_callback(sender, **kwargs):
+    print('Topic 有了新的评论')
